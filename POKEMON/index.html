@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POKEMON | BY TIIRTH</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nova+Cut&family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="shortcut icon" href="Images/pokeball.png" type="image/x-icon" />
+    <style>
+      * {
+        font-family: "Press Start 2P", cursive;
+      }
+
+      body {
+        background: #000;
+        overflow: hidden;
+        margin: 0;
+      }
+
+      h1 {
+        margin: 0;
+      }
+
+      button {
+        border: 0;
+        font-size: 16px;
+      }
+
+      button:hover {
+        background-color: #ddd;
+        cursor: pointer;
+      }
+      .red {
+        color: rgb(255, 81, 0);
+      }
+    </style>
+  </head>
+
+  <body>
+    <div style="display: inline-block; position: relative">
+      <div
+        id="overlappingDiv"
+        style="
+          background: #000;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          opacity: 0;
+          pointer-events: none;
+          z-index: 10;
+        "
+      ></div>
+      <canvas></canvas>
+
+      <div id="userInterface" style="display: none">
+        <div
+          id="potion"
+          style="
+            height: 200px;
+            position: absolute;
+            bottom: 72px;
+            right: 255px;
+            aspect-ratio: 1;
+          "
+        >
+          <img src="Images/potion.webp" alt="" />
+          <div
+            style="
+              background: #000;
+              color: #fff;
+              border-radius: 50%;
+              height: 40px;
+              aspect-ratio: 1;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              margin-left: 50px;
+              margin-top: -25px;
+            "
+            id="potionNo"
+          >
+            0
+          </div>
+        </div>
+        <!--- Health bar for enemy -->
+        <div
+          style="
+            background: #fff;
+            position: absolute;
+            top: 400px;
+            right: 50px;
+            width: 250px;
+            border: 4px solid black;
+            padding: 12px;
+          "
+        >
+          <div style="display: flex; justify-content: space-between">
+            <h1 style="font-size: 16px">Charmeleon</h1>
+            <h1 id="playerlevel" style="font-size: 16px">LV.1</h1>
+          </div>
+          <div style="position: relative">
+            <div style="height: 5px; background: #ccc; margin-top: 10px"></div>
+            <div
+              id="playerHealthBar"
+              style="
+                height: 5px;
+                background: green;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+              "
+            ></div>
+          </div>
+          <div style="position: relative">
+            <div style="height: 5px; background: #ccc; margin-top: 10px"></div>
+            <div
+              id="playerlevelBar"
+              style="
+                height: 5px;
+                background: blue;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                max-width: 100%;
+              "
+            ></div>
+          </div>
+        </div>
+
+        <!--- Health bar for me -->
+
+        <div
+          style="
+            background: #fff;
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 250px;
+            border: 4px solid black;
+            padding: 12px;
+          "
+        >
+          <div style="display: flex; justify-content: space-between">
+            <h1 style="font-size: 16px">Caterpie</h1>
+            <h1 id="enemylevel" style="font-size: 16px">LV.1</h1>
+          </div>
+
+          <div style="position: relative">
+            <div style="height: 5px; background: #ccc; margin-top: 10px"></div>
+            <div
+              id="enemyHealthBar"
+              style="
+                height: 5px;
+                background: green;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+              "
+            ></div>
+          </div>
+          <div style="position: relative">
+            <div style="height: 5px; background: #ccc; margin-top: 10px"></div>
+            <div
+              id="enemylevelBar"
+              style="
+                height: 5px;
+                background: blue;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                max-width: 100%;
+              "
+            ></div>
+          </div>
+        </div>
+
+        <!--- Attack bar -->
+        <div
+          style="
+            background-color: #fff;
+            height: 140px;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            border-top: 4px solid black;
+            display: flex;
+          "
+        >
+          <div
+            id="dialogueBox"
+            style="
+              position: absolute;
+              top: 0;
+              right: 0;
+              left: 0;
+              bottom: 0;
+              background: white;
+              padding: 12px;
+              padding-top: 20px;
+              display: none;
+              cursor: pointer;
+              user-select: none;
+            "
+          >
+            attack
+          </div>
+          <div
+            id="dialogueBoxExp"
+            style="
+              position: absolute;
+              top: 0;
+              right: 0;
+              left: 0;
+              bottom: 0;
+              background: white;
+              padding: 12px;
+              padding-top: 20px;
+              display: none;
+              cursor: pointer;
+              user-select: none;
+            "
+          >
+            attack
+          </div>
+          <div
+            id="attacksBox"
+            style="
+              width: 66.6%;
+              display: grid;
+              grid-template-columns: repeat(3, 1fr);
+            "
+          ></div>
+          <div
+            style="
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              width: 33.3%;
+              border-left: 4px solid black;
+            "
+          >
+            <h1 id="attackType" style="font-size: 16px">Attack Type</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"
+      integrity="sha512-6+YN/9o9BWrk6wSfGxQGpt3EUK6XeHi6yeHV+TYD2GR0Sj/cggRpXr1BrAQf0as6XslxomMUxXp2vIl+fv0QRA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"
+      integrity="sha512-H6cPm97FAsgIKmlBA4s774vqoN24V5gSQL4yBTDOY2su2DeXZVhQPxFK4P6GPdnZqM9fg1G3cMv5wD7e6cFLZQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <script src="data/audio.js"></script>
+    <script src="data/battleZones.js"></script>
+    <script src="data/collisions.js"></script>
+    <script src="data/attacks.js"></script>
+    <script src="data/monsters.js"></script>
+    <script src="index.js"></script>
+    <script src="battleScene.js"></script>
+  </body>
+</html>
