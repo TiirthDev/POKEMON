@@ -1,3 +1,4 @@
+//audio object
 const audio = {
     Map: new Howl({
         src: "./Audio/map.wav",

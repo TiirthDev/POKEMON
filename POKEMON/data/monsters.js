@@ -1,3 +1,4 @@
+//monsters object
 const monsters = {
     Emby: {
         position: {

@@ -100,6 +100,10 @@ foregroundImage.src = "./Images/forgroundObjects.png";
 const garyImage = new Image();
 garyImage.src = "./Images/lance.png";
 
+//Cynthia image
+const CynthiaImage = new Image();
+CynthiaImage.src = "./Images/Cynthia.webp";
+
 //class sprite
 class Sprite {
     constructor({
@@ -163,6 +167,11 @@ class Sprite {
     }
 }
 
+//random No. generator
+function randomNumberBetween(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 //monster class
 class Monster extends Sprite {
     constructor({
@@ -212,11 +221,7 @@ class Monster extends Sprite {
         if (this.isEnemy) healthBar = "#playerHealthBar";
         //deducting health on attack
         if (attack.name === 'Fireball' && this.isEnemy === false) {
-            if (enemylevelNo < playerlevelNo - 3) {
-                recipient.health -= attack.damage * 2;
-            } else {
-                recipient.health -= attack.damage * 1.5;
-            }
+            recipient.health -= attack.damage * 1.9;
             document.querySelector("#dialogueBox").innerHTML =
                 this.name + " used " + attack.name + '<br />' + '<br/>' + '<span class="red">' + "A Critical Hit" + "<span/>"
         } else if (attack.name === 'Scratch' && this.isEnemy) {
@@ -236,6 +241,17 @@ class Monster extends Sprite {
         }
         else if (enemyLevelTracker === 15 && this.isEnemy) {
             recipient.health -= attack.damage * 4
+        } else {
+            recipient.health -= attack.damage
+        }
+
+        if (this.isEnemy === true) {
+            if (recipient.health >= 0) {
+                document.querySelector("#healthText").innerHTML = Math.floor(recipient.health) + '/100'
+            }
+            else {
+                document.querySelector("#healthText").innerHTML = '0/100'
+            }
         }
 
         let rotation = 1;
@@ -260,6 +276,16 @@ class Monster extends Sprite {
                     animate: true,
                     rotation,
                 });
+
+                if (randomNumberBetween(1, 10) < 2) {
+                    document.querySelector("#burned").style.display = "block";
+                    if (this.isEnemy === false) {
+                        recipient.health -= 5
+                        queue.push(() => {
+                            document.querySelector("#dialogueBox").innerHTML = "Caterpie Got Burned!";
+                        })
+                    }
+                }
 
                 renderedSprites.splice(1, 0, fireball);
 
@@ -358,7 +384,9 @@ class Monster extends Sprite {
                     });
         }
     }
+
 }
+
 
 //const for classes
 const background = new Sprite({
@@ -403,6 +431,15 @@ const gary = new Sprite({
     image: garyImage,
 });
 
+//cynthia
+const cynthia = new Sprite({
+    position: {
+        x: canvas.width * 1 - 222,
+        y: canvas.height / .78 - 98,
+    },
+    image: CynthiaImage,
+});
+
 //const and let
 const keys = {
     w: {
@@ -420,7 +457,7 @@ const keys = {
 };
 let lastKey = "";
 
-const movables = [background, ...boundaries, foreground, ...battleZones, gary];
+const movables = [background, ...boundaries, foreground, ...battleZones, gary, cynthia];
 
 const battle = {
     initiated: false,
@@ -453,21 +490,6 @@ function animate() {
         battleZone.draw();
     });
 
-    //drawing player
-    player.draw();
-
-    //label text
-    c.fillStyle = "white";
-    c.font = "22px Cursive";
-    c.fillText(
-        "Ash",
-        player.position.x + 4,
-        player.position.y - 12,
-        300,
-        100,
-        600
-    );
-
     //drawing gary a interactive character
     gary.draw()
 
@@ -478,6 +500,36 @@ function animate() {
         "Lance",
         gary.position.x + 8,
         gary.position.y - 5,
+        300,
+        100,
+        600
+    );
+
+    //drawing cynthiaImage
+    cynthia.draw();
+
+    //label text for cynthia
+    c.fillStyle = "white";
+    c.font = "22px Cursive";
+    c.fillText(
+        "Cynthia",
+        cynthia.position.x - 8,
+        cynthia.position.y - 5,
+        300,
+        100,
+        600
+    );
+
+    //drawing player
+    player.draw();
+
+    //label text
+    c.fillStyle = "white";
+    c.font = "22px Cursive";
+    c.fillText(
+        "Ash",
+        player.position.x + 4,
+        player.position.y - 12,
         300,
         100,
         600
@@ -594,7 +646,11 @@ function animate() {
                             //new animation loop for battle activation
                             initBattle();
                             animateGymBattle();
-                            document.querySelector("#dialogueBox").innerHTML = "Hey Ash I have Heard About your Pokemon Skills I am giving you a chance to showcase" + "<br />" + " <br />" + "Them! I Challenge you to a Battle! Watch Out Kid!";
+                            //dialogue for gary
+                            document.querySelector("#dialogueBox").innerHTML = "Hey I am Lance, The Leader Of This City!";
+                            queue.push(() => {
+                                document.querySelector("#dialogueBox").innerHTML = "Ash I have Heard About your Pokemon Skills I am giving you a chance to showcase" + "<br />" + " <br />" + "Them! I Challenge you to a Battle! Watch Out Kid!";
+                            })
                             gsap.to("#overlappingDiv", {
                                 opacity: 0,
                                 duration: 0.4,
@@ -604,6 +660,67 @@ function animate() {
                 },
             });
 
+
+        }
+    }
+
+    //interactions with Cynthia
+
+    if (keys.a.pressed || keys.w.pressed || keys.d.pressed || keys.s.pressed) {
+        const overlappingCynthiaArea =
+            (Math.min(
+                player.position.x + player.width,
+                cynthia.position.x + cynthia.width
+            ) -
+                Math.max(player.position.x, cynthia.position.x)) *
+            (Math.min(
+                player.position.y + player.height,
+                cynthia.position.y + cynthia.height
+            ) -
+                Math.max(player.position.y, cynthia.position.y));
+        if (
+            rectangularCollision({
+                rectangle1: player,
+                rectangle2: cynthia,
+            }) &&
+            overlappingCynthiaArea > (player.width * player.height) / 2 &&
+            Math.random() < 0.01) {
+            //end for this animation loop
+            window.cancelAnimationFrame(animationId);
+            audio.Map.stop();
+            audio.initBattle.play();
+            audio.battle.play();
+            battle.initiated = true;
+            //animation for battle activation
+            gsap.to("#overlappingDiv", {
+                opacity: 1,
+                repeat: 3,
+                yoyo: true,
+                duration: 0.4,
+                onComplete() {
+                    gsap.to("#overlappingDiv", {
+                        opacity: 1,
+                        duration: 0.4,
+                        onComplete() {
+                            //new animation loop for battle activation
+                            initBattle();
+                            animateCynthiaBattle();
+                            //dialogue for gary
+                            document.querySelector("#dialogueBox").innerHTML = "Hey Ash! I am Cynthia! I Want To Help You!";
+                            queue.push(() => {
+                                document.querySelector("#dialogueBox").innerHTML = " I Would Like To Tell You About Lance The Leader! He is A Legendary Trainer" + '<br />' + '<br/>' + "But To Go Easy On His Opponents He Uses A Caterpie!";
+                            })
+                            queue.push(() => {
+                                document.querySelector("#dialogueBox").innerHTML = "But Beat Me First Before Going!";
+                            })
+                            gsap.to("#overlappingDiv", {
+                                opacity: 0,
+                                duration: 0.4,
+                            });
+                        },
+                    });
+                },
+            });
 
         }
     }
@@ -771,3 +888,7 @@ addEventListener("keydown", () => {
         clicked = true;
     }
 });
+
+document.querySelector("#dialogueBoxCynthia").addEventListener("click", () => {
+    document.querySelector("#dialogueBoxCynthia").style.display = 'none'
+})
