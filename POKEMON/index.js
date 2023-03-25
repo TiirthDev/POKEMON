@@ -408,7 +408,7 @@ const foreground = new Sprite({
 const player = new Sprite({
     position: {
         x: canvas.width / 2.5 - 192 / 4 / 2,
-        y: canvas.height / 1.62 - 68 / 2,
+        y: canvas.height / 1.5 - 68 / 2,
     },
     image: playerDownImage,
     frames: {
