@@ -435,7 +435,7 @@ const gary = new Sprite({
 const cynthia = new Sprite({
     position: {
         x: canvas.width * 1 - 222,
-        y: canvas.height / .68 - 98,
+        y: canvas.height / .73 - 98,
     },
     image: CynthiaImage,
 });
